@@ -72,16 +72,22 @@ student_stats<-cbind(student_names,test_scores,passed)
 11. Apply your function to the vector with test scores that you created in number 5.
 
 ```{r}
+#using 'ifelse'
+passed_or_not<-ifelse(test_scores>=50,TRUE,FALSE)
+print(passed_or_not)
+
+#using 'if else'
 passed_function<-function(test_scores) {
-  if(test_scores > 50) {
-    print("Passed")
+  if(test_scores >= 50) {
+    (TRUE)
   } 
   else {
-    print("Failed")
+    (FALSE)
   }
 }
+print(passed_function)
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> Answer: The 'if' and 'else' option worked here. That is because the 'ifelse' option always returns a value, and in this case we didn't want that—we wanted the value to printed.
+> Answer: The 'ifelse' option worked here. This is because ifelse works better with vectors that are longer while if and else works with vectors that are a length of 1.

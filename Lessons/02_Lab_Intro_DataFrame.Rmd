@@ -113,6 +113,6 @@ head(df) #show the first 6 rows of df
 df[10:20,1]
 
 #you could also use this notation to delete columns
-df <- df[,-2]
-df
+df3 <- df[,-2]
+df3
 ```
