@@ -69,7 +69,7 @@ ggplot(USGS.flow.data, aes(x = discharge.mean.approval)) +
 
 Visualize distributions of values for continuous numerical variables. What is happening in each line of code? Insert a comment above each line.
 
-```{r, fig.height = 3, fig.width = 4}
+```{r histogram, fig.height = 3, fig.width = 4}
 #
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = discharge.mean))
@@ -96,7 +96,7 @@ ggplot(USGS.flow.data) +
 
 An alternate to a histogram is a frequency polygon graph (distributions of values for continuous numerical variables). Instead of displaying bars,  counts of continuous variables are displayed as lines. This is advantageous if you want to display multiple variables or categories of variables at once.
 
-```{r, fig.height = 3, fig.width = 4}
+```{r , fig.height = 3, fig.width = 4}
 #
 ggplot(USGS.flow.data) +
   geom_freqpoly(aes(x = gage.height.mean), bins = 50) +

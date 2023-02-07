@@ -45,18 +45,19 @@ vector1[3] #
 # Matrices ----
 matrix1 <- matrix(1:20, nrow = 5,ncol = 4) # 
 matrix1
-matrix2 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE) #
+matrix2 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE) #makes it enter by row instead of column
 matrix2
 matrix3 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE, # return after comma continues the line
                   dimnames = list(c("uno", "dos", "tres", "quatro", "cinco"), 
-                                  c("un", "deux", "trois", "quatre"))) #
+                                  c("un", "deux", "trois", "quatre"))) #rows in spanish, columns in french
 
 matrix1[4, ] #
-matrix1[ , 3] #
-matrix1[c(12, 14)] #
-matrix1[c(12:14)] #
+matrix1[ , 3] #all rows of data in column 3
+matrix1[c(12, 14)] #12th and 14th item
+matrix1[c(12:14)] #12th thru 14th item
 matrix1[2:4, 1:3] #
 
+#building matrix with separate elements
 cells <- c(1, 26, 24, 68)
 rnames <- c("R1", "R2")
 cnames <- c("C1", "C2") 
@@ -66,24 +67,27 @@ matrix4
 
 # Lists ---- 
 list1 <- list(name = "Maria", mynumbers = vector1, mymatrix = matrix1, age = 5.3); list1
-list1[[2]]
+list1[[2]] #referring to list items, must use double brackets
+list1["name"]
 
-# Data Frames ----
+# Data Frames ---- can think about like an excel spreadsheet
 d <- c(1, 2, 3, 4) # What type of vector?
 e <- c("red", "white", "red", NA) # What type of vector?
 f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector?
-dataframe1 <- data.frame(d,e,f) #
-names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # 
+dataframe1 <- data.frame(d,e,f) # can put them together because they're all the same length
+names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # update names through names function
 
-dataframe1[1:2,] # 
-dataframe1[c("ID","Passed")] # 
+dataframe1[1:2,] # rows 1 and 2, all columns
+dataframe1[1:2,"Color"]
+dataframe1[1:2,3]
+dataframe1[c("ID","Passed")] #
 dataframe1$ID
 
 ```
 
 Question: How do the different types of data appear in the Environment tab?
 
-> Answer:
+> Answer: 
 
 Question: In the R chunk below, write "dataframe1\$". Press `tab` after you type the dollar sign. What happens?
 
@@ -94,25 +98,43 @@ Question: In the R chunk below, write "dataframe1\$". Press `tab` after you type
 Find a ten-day forecast of temperatures (Fahrenheit) for Durham, North Carolina. Create two vectors, one representing the high temperature on each of the ten days and one representing the low.
 
 ```{r DataExercise-1a}
-
+high_F <- c(64,71,72,63,51,52,61,64,67,73)
+low_F <- c(42,49,60,46,32,32,41,47,52,54)
 ```
 
 Now, create two additional vectors that include the ten-day forecast for the high and low temperatures in Celsius. Use a function to create the two new vectors from your existing ones in Fahrenheit.
 
 ```{r DataExercise-1b}
+high_celcius <- (high_F-32)*5/9;high_celcius
+low_celcius <- (low_F-32)*5/9;low_celcius
+
+
+#f2c <- function(f){
+ # C <- round(((F-32)*5/9),2)
+ # return(c)
+#}
+
+#highC <- f2c(high_F)
+#lowC <- f2c(low_F)
 
 ```
 
 Combine your four vectors into a data frame and add informative column names.
 
 ```{r DataExercise-1c}
+#make new data frame
+temp_10_days <- data.frame(high_F,low_F,high_celcius,low_celcius)
+
+# update names through names function
+names(temp_10_days) <- c("Fahrenheit High","Fahrenheit Low","Celcius High", "Celcius Low"); View(temp_10_days) 
 
 ```
 
 Use the common functions `summary` and `sd` to obtain basic data summaries of the ten-day forecast. How would you call these functions differently for the entire data frame vs. a single column? Attempt to demonstrate both options below.
 
 ```{r DataExercise-1d}
-
+summary(temp_10_days)
+sd(temp_10_days)
 ```
 
 ### Date objects
@@ -127,7 +149,7 @@ Remember formatting of dates in R:
 # An example is provided to get you started.
 # (code must be uncommented)
 today <- Sys.Date()
-format(today, format = "%B")
+format(today, format = "%B") #return long name of month
 #format(today, format = "")
 #format(today, format = "")
 #format(today, format = "")
@@ -146,7 +168,7 @@ library(lubridate)
 
 #Ex1
 str_today <- "2023-feb-7"
-#Since the format is year-month-day we will use function ymd()
+#Since the format is year-month-day we will use function ymd() - only need to tell it the order when using lubridate
 date_obj_today <- ymd(str_today)
 date_obj_today
 
@@ -159,8 +181,8 @@ date_obj_today
 #Ex_3 - on your own...
 str_juneteenth <- "19 June 1865"
 #Since the format is month-day-year we will use function mdy()
-#date_juneteenth <- ()
-#date_juneteenth
+date_juneteenth <- dmy(str_juneteenth)
+date_juneteenth
 ```
 
 ```{r DateExercise2}
@@ -168,6 +190,10 @@ str_juneteenth <- "19 June 1865"
 str_past <- "55-feb-3"
 date_obj_past <- ymd(str_past)
 date_obj_past
+
+ifelse(year(date_obj_past)%%100 > 23,
+       year(date_obj_past)-100,
+       year(date_obj_past))
 
 #Build a function to fix year that is more general than the one discussed in the lesson
 fix.early.dates <- function(d, cutoff) {
