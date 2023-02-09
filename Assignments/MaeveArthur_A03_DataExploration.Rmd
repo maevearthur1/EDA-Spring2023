@@ -112,7 +112,7 @@ common_names <- summary(Neonics$Species.Common.Name)
 class(Neonics$Conc.1..Author.)
 ```
 
-> Answer: It is a factor. It is not a numeric class because it is categorical data.
+> Answer: It is a factor. It is not a numeric class because has the non-numeric values of slashes.
 
 ## Explore your data graphically (Neonics)
 
