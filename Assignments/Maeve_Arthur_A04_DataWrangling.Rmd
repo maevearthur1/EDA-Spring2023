@@ -1,6 +1,6 @@
 ---
 title: "Assignment 4: Data Wrangling"
-author: "Student Name"
+author: "Maeve Arthur"
 date: "Spring 2023"
 output: pdf_document
 geometry: margin=2.54cm
@@ -39,14 +39,40 @@ The completed exercise is due on Friday, Feb 20th @ 5:00pm.
 
 2. Apply the `glimpse()` function to reveal the dimensions, column names, and structure of each dataset. 
 
-```{r, message = FALSE}
+```{r setting up session and loading data, message = FALSE}
 #1a 
+library(tidyverse)
+library(lubridate)
+library(here)
 
 #1b 
+getwd()
 
 #1c 
+#reading all the files
+
+EPA.2018.ozone <- read.csv(
+  file=here("./Data/Raw/EPAair_O3_NC2018_raw.csv"), 
+  stringsAsFactors = TRUE)
+
+EPA.2019.ozone <- read.csv(
+  file=here("./Data/Raw/EPAair_O3_NC2019_raw.csv"), 
+  stringsAsFactors = TRUE)
+
+EPA.2018.PM2.5<- read.csv(
+  file=here("./Data/Raw/EPAair_PM25_NC2018_raw.csv"), 
+  stringsAsFactors = TRUE)
+
+EPA.2019.PM2.5<- read.csv(
+  file=here("./Data/Raw/EPAair_PM25_NC2019_raw.csv"), 
+  stringsAsFactors = TRUE)
 
 #2 
+#loooking at data
+glimpse(EPA.2018.ozone)
+glimpse(EPA.2019.ozone)
+glimpse(EPA.2018.PM2.5)
+glimpse(EPA.2019.PM2.5)
 
 ```
 
@@ -61,14 +87,50 @@ The completed exercise is due on Friday, Feb 20th @ 5:00pm.
 
 6. Save all four processed datasets in the Processed folder. Use the same file names as the raw files but replace "raw" with "processed".
 
-```{r}
+```{r Altering and then processing individual datasets}
 #3
+# i changed the data column to a date format
+EPA.2018.ozone$Date <- mdy(EPA.2018.ozone$Date)
+
+EPA.2019.ozone$Date <- mdy(EPA.2019.ozone$Date)
+
+EPA.2018.PM2.5$Date <- mdy(EPA.2018.PM2.5$Date)
+
+EPA.2019.PM2.5$Date <- mdy(EPA.2019.PM2.5$Date)
 
 #4
+#I selected important columns for my analysis
+EPA.2018.ozone <- EPA.2018.ozone %>%
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+
+EPA.2019.ozone <- EPA.2019.ozone %>%
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+
+EPA.2018.PM2.5 <- EPA.2018.PM2.5 %>%
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+
+EPA.2019.PM2.5 <- EPA.2019.PM2.5 %>%
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 
 #5
+#I filled AQS_PARAMETER_DESC column cells with "PM2.5
+EPA.2018.PM2.5 <- mutate(EPA.2018.PM2.5, AQS_PARAMETER_DESC = "PM2.5")
+
+EPA.2019.PM2.5 <- mutate(EPA.2019.PM2.5, AQS_PARAMETER_DESC = "PM2.5")
 
 #6
+#saving processed data files
+write.csv(EPA.2018.ozone, row.names = FALSE, 
+          file ="/home/guest/EDA-Spring2023/Data/Processed/EPAair_O3_NC2018_processed.csv")
+
+write.csv(EPA.2019.ozone, row.names = FALSE, 
+          file ="/home/guest/EDA-Spring2023/Data/Processed/EPAair_O3_NC2019_processed.csv")
+
+write.csv(EPA.2018.PM2.5, row.names = FALSE, 
+          file ="/home/guest/EDA-Spring2023/Data/Processed/EPAair_PM25_NC2018_processed.csv")
+
+write.csv(EPA.2019.PM2.5, row.names = FALSE, 
+          file ="/home/guest/EDA-Spring2023/Data/Processed/EPAair_PM25_NC2019_processed.csv")
 
 ```
 
@@ -93,16 +155,35 @@ The completed exercise is due on Friday, Feb 20th @ 5:00pm.
 
 11. Save your processed dataset with the following file name: "EPAair_O3_PM25_NC1819_Processed.csv"
 
-```{r}
+```{r Combining and then processing individual datasets}
 #7 
+#combining data sets
+EPA.2018.2019 <- rbind(EPA.2018.ozone, EPA.2018.PM2.5, EPA.2019.ozone, EPA.2019.PM2.5)
 
 #8 
+#filtering for important rows, the groruping and summarising data
+EPA.common.sites <- 
+  EPA.2018.2019 %>%
+  filter(Site.Name %in% c("Linville Falls", "Durham Armory", "Leggett", "Hattie Avenue", "Clemmons Middle", "Mendenhall School", "Frying Pan Mountain", "West Johnston Co.", "Garinger High School", "Castle Hayne", "Pitt Agri. Center", "Bryson City", "Millbrook School"))%>%
+  group_by(Date,Site.Name,AQS_PARAMETER_DESC,COUNTY) %>%
+  summarise(meanAQI=mean(DAILY_AQI_VALUE),
+            meanLat=mean(SITE_LATITUDE),
+            meanLon=mean(SITE_LONGITUDE)) %>%
+  mutate(Month=month(Date),
+         Year=year(Date))
 
 #9
+#spreading data
+EPA.common.sites <- pivot_wider(EPA.common.sites, names_from = AQS_PARAMETER_DESC, values_from = meanAQI)
 
 #10
+#checkinig dimensions of data
+dim(EPA.common.sites)
 
 #11
+#saving data file
+write.csv(EPA.common.sites, row.names = FALSE, 
+          file ="/home/guest/EDA-Spring2023/Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv")
 
 ```
 
@@ -113,16 +194,23 @@ The completed exercise is due on Friday, Feb 20th @ 5:00pm.
 
 13. Call up the dimensions of the summary dataset.
 
-```{r}
+```{r Generating summaries of dataset}
 
 #12
-
+#split-apply-comobine strategy to make summary data frame
+EPA.common.sites <- 
+  EPA.common.sites %>%
+  group_by(Site.Name,Month,Year) %>%
+  summarise(mean.AQI.ozone=mean(Ozone),
+            mean.AQI.PM2.5=mean(PM2.5)) %>%
+  drop_na(mean.AQI.ozone)
 
 #13
-
+#checking dimensions of data frame
+dim(EPA.common.sites)
 
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`?
 
-> Answer: 
+> Answer: We used drop_na because we are working with tidy R.
