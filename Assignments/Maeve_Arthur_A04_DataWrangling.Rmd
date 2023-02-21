@@ -161,7 +161,7 @@ write.csv(EPA.2019.PM2.5, row.names = FALSE,
 EPA.2018.2019 <- rbind(EPA.2018.ozone, EPA.2018.PM2.5, EPA.2019.ozone, EPA.2019.PM2.5)
 
 #8 
-#filtering for important rows, the groruping and summarising data
+#filtering for important rows, the grouping and summarizing data
 EPA.common.sites <- 
   EPA.2018.2019 %>%
   filter(Site.Name %in% c("Linville Falls", "Durham Armory", "Leggett", "Hattie Avenue", "Clemmons Middle", "Mendenhall School", "Frying Pan Mountain", "West Johnston Co.", "Garinger High School", "Castle Hayne", "Pitt Agri. Center", "Bryson City", "Millbrook School"))%>%
@@ -184,6 +184,7 @@ dim(EPA.common.sites)
 #saving data file
 write.csv(EPA.common.sites, row.names = FALSE, 
           file ="/home/guest/EDA-Spring2023/Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv")
+
 
 ```
 
