@@ -123,9 +123,9 @@ temp.plot <-
   labs(
     title="Temperature in Peter and Paul Lakes",
     x = "Month",
-    y = "Temperature (celcius)") +
+    y = "Temperature (C)") +
   theme(axis.text.x = element_text(angle = 35,  hjust = 1),
-        legend.position = "none") 
+        legend.position = "none")
 
 print(temp.plot)
 
@@ -142,7 +142,7 @@ TP.plot <-
   labs(
     title="Total Phosphorus Concentration in Peter and Paul Lakes",
     x = "Month",
-    y = "Total Phosphorus (ug)",
+    y = "TP (ug)",
     color = "Lake name") +
   theme(axis.text.x = element_text(angle = 35,  hjust = 1),
         legend.position = "none")
@@ -160,20 +160,41 @@ TN.plot <-
   geom_boxplot(aes(color = lakename)) +
   scale_x_discrete(drop=FALSE) +
   labs(
-    title="TN Concentration in Peter and Paul Lakes",
+    title="Total Nitrogen Concentration in Peter and Paul Lakes",
     x = "Month",
-    y = "TN concentration (ug)",
+    y = "TN (ug)",
     color = "Lake Name") +
   theme(axis.text.x = element_text(angle = 35,  hjust = 1),
-        legend.position = "bottom")
+        legend.position = "none")
+print(TN.plot)        
 
-print(TN.plot)
-
-#making cowplot
-plot_grid(temp.plot, TP.plot, TN.plot,
+#making cowplot without legend
+grid <- plot_grid(temp.plot, TP.plot, TN.plot,
   align = 'v',
   axis = 'b',
-  nrow = 3)
+  nrow = 3,
+  rel_widths = c(1,2,3)
+  )
+ 
+#get legend       
+plot_legend = get_legend(temp.plot)
+
+#modify legend
+TN.plot + theme(
+  legend.text = element_text(size = 6),
+  legend.title = element_text(size=6),
+  legend.box.margin = margin(0,0,0,10))
+  
+grid_plus_legend <- plot_grid(grid, plot_legend)
+  
+
+
+# align_plots(temp.plot, TP.plot, TN.plot,
+#   align = "v",
+#   axis = "b",
+#   greedy = FALSE
+# )
+
 
 ```
 
@@ -200,7 +221,6 @@ litter.plot <- Litter %>%
     
 print(litter.plot)
     
-
 #7
 #needle dry mass vs data, faceted
 litter.plot2 <- Litter %>%
