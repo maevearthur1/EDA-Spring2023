@@ -186,15 +186,14 @@ TN.plot + theme(
   legend.box.margin = margin(0,0,0,10))
   
 grid_plus_legend <- plot_grid(grid, plot_legend)
-  
 
+print(grid_plus_legend)
 
 # align_plots(temp.plot, TP.plot, TN.plot,
 #   align = "v",
 #   axis = "b",
 #   greedy = FALSE
 # )
-
 
 ```
 
