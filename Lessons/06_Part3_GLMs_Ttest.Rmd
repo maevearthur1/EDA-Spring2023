@@ -106,7 +106,7 @@ ggplot(EPAair, aes(x = Ozone, color = as.factor(Year))) +
 O3.twosample <- t.test(EPAair$Ozone ~ EPAair$Year)
 O3.twosample
 
-# Format as a GLM
+# Format as a GLM - have to change it to "is year a predictor of ozone levels?"
 O3.twosample2 <- lm(EPAair$Ozone ~ EPAair$Year)
 summary(O3.twosample2)
 

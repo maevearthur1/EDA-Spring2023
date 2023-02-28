@@ -16,6 +16,7 @@ editor_options:
 ```{r, message = FALSE}
 
 library(tidyverse)
+library(htmltools)
 #install.packages("agricolae")
 library(agricolae)   #you may need to install/update package "htmltools" before installing and loading agricolae
 library(here)
@@ -36,7 +37,7 @@ theme_set(mytheme)
 ### One-way ANOVA
 A one-way ANOVA is used when you have one categorical explanatory variable with more than two categories. In R, we can run the model with the function `lm` or `aov`, the latter of which will allow us to run post-hoc tests to determine pairwise differences.
 
-For example: Does total litter biomass differ among sites at the Niwot Ridge LTER?
+For example: Does total litter biomass differ among sites at the Niwot Ridge LTER? - is mean different at different sites?
 ```{r}
 # Wrangle the data
 Litter.Totals <- Litter %>%
@@ -51,6 +52,7 @@ summary(Litter.Totals$plotID)
 # Note: the important assumption for GLMs is normality of residuals, 
 # not necessarily normality of raw data. See below when we plot the model.
 # shapiro.test() performs the Shapiro-Wilk test of the null that data follows a normal distribution
+#if p is less than .05, reject null hypothesis
 
 shapiro.test(Litter.Totals$dryMass[Litter.Totals$plotID == "NIWO_040"])
 shapiro.test(Litter.Totals$dryMass[Litter.Totals$plotID == "NIWO_041"])
@@ -82,7 +84,7 @@ summary(Litter.Totals.anova)
 
 #results: reject null hypothesis i.e. difference between a pair of group means is statistically significant
 
-# Format ANOVA as lm
+# Format ANOVA as lm 
 Litter.Totals.anova2 <- lm(data = Litter.Totals, dryMass ~ plotID)
 summary(Litter.Totals.anova2)
 
@@ -90,11 +92,11 @@ summary(Litter.Totals.anova2)
 # ANOVA is robust against departures from normality.
 plot(Litter.Totals.anova2)
 
-# Post-hoc test
+# Post-hoc test - want to figure out which means are not the same
 # TukeyHSD() computes Tukey Honest Significant Differences
 TukeyHSD(Litter.Totals.anova)
 
-# Extract groupings for pairwise relationships
+# Extract groupings for pairwise relationships - treatments with same letter are not sig. different - so tells which groups are the same
 Litter.Totals.groups <- HSD.test(Litter.Totals.anova, "plotID", group = TRUE)
 Litter.Totals.groups
 
@@ -112,7 +114,7 @@ print(Litter.Totals.plot)
 
 What information does the output give us? How might we report this information in a report?
 
-> 
+> need to reorder (group a, b, c, d)
 
 ## TWO-WAY ANOVA
 
@@ -124,6 +126,7 @@ For example: What if we wanted to know how litter masses varied across functiona
 # Format as aov
 Litter.anova.2way <- aov(data = Litter, dryMass ~ functionalGroup + nlcdClass)
 summary(Litter.anova.2way)
+#reject null means mean across groups is different
 
 # Format as lm
 Litter.anova.2way2 <- lm(data = Litter, dryMass ~ functionalGroup + nlcdClass)
@@ -141,7 +144,7 @@ We may expect the effects of functional group and land cover to be dependent on 
 The output gives test statistics for each explanatory variable as well as the interaction effect of the explanatory variables. If the p-value for the interaction effect is less than 0.05, then we would consider the interaction among the explanatory variables to be significant.
 
 ```{r}
-# Format as aov
+# Format as aov - using * instead of +
 Litter.anova.2way3 <- aov(data = Litter, dryMass ~ functionalGroup * nlcdClass)
 summary(Litter.anova.2way3)
 
@@ -161,6 +164,8 @@ Litter.interaction <- with(Litter, interaction(functionalGroup, nlcdClass))
 
 #Litter.test <- cbind(Litter,Litter.interaction)
 
+#compare means for each one of levels - use litter interaction levels
+#interaction of needles and evergreen forest cannot be compared with any other interaction
 Litter.anova.2way5 <- aov(data = Litter, dryMass ~ Litter.interaction)
 
 Litter.groups <- HSD.test(Litter.anova.2way5, "Litter.interaction", group = TRUE)
