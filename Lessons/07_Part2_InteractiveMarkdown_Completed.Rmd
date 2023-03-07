@@ -17,7 +17,7 @@ RMarkdown is a powerful tool for creating dynamic documents that combine code, t
 ### Set up the coding environment
 ```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
 #Load packages
-library(tidyverse);library(here);library(lubridate)
+library(tidyverse);library(here);library(lubridate);library(shiny)
 
 #Load data
 nutrient_data <- read.csv(
@@ -72,9 +72,10 @@ To do this we need to convince R that the value we associate with the `y` aesthe
 
 ```{r Tweak plot to use variables, echo=FALSE}
 #Create plotting function
-plot_it <- function(the_parameter,start_year,end_year){
+  plot_it <- function(the_parameter,start_year,end_year){
+  
   #Construct the plot
-  my_plot <-  nutrient_data %>% 
+  my_plot <-  nutrient_data %>%
     filter(year4 > start_year & year4 < end_year) %>% 
     ggplot(
       aes(
@@ -139,6 +140,9 @@ selectInput(
   choices = c('tp_ug','tn_ug','no23','po4'),
   selected = 'tp_ug')
 
+#adding another widget
+#inputID is what you want to call it
+#value is the default
 sliderInput(
   inputId = "YearSlider",
   label = "Select the date range",
@@ -147,12 +151,15 @@ sliderInput(
   value = c(1995,2000)
 )
 
+#why doesn't this work?
 renderPlot(
   plot_it(
     input$the_parameter,
     input$YearSlider[1],
     input$YearSlider[2])
   )
+
+#first is parameter you want to plot, second 
 ```
 
 
