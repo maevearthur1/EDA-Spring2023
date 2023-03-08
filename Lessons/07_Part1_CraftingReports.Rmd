@@ -74,6 +74,8 @@ Create a table below that details the example datasets we have been using in cla
 
 Create an R chunk below that installs the package `knitr`. Instead of commenting out the code, customize the chunk options such that the code is not evaluated (i.e., not run).
 
+
+
 ### Setup
 
 Create an R chunk below called "setup" that loads the packages `tidyverse`, `lubridate`, `here`, and `knitr`, and sets a ggplot theme. Remember that you need to disable R throwing a message, which contains a check mark that cannot be knitted.
