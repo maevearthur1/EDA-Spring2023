@@ -83,16 +83,21 @@ BR_complete <- inner_join(Rainfall_BR_processed,Temp_BR_processed)
 ```{r}
 
 #Exercise 5: Check if there is any missing data for both temperature and rainfall series.
-
-
+summary(BR_complete$Rainfall)
+summary(BR_complete$Temperature_C)
 
 
 #Exercise 6: Plot both series over time on separate plots. Add a trend line using geom_smooth(). Can you say something about the trend just by visualizing the data?
 
+#can see seasonality in the rainfall, can't really see trend
+ggplot(BR_complete, aes(y = Rainfall, x = Date)) +
+  geom_line() +
+  geom_smooth(method = lm)
 
-
-
-
+#can see seasonality in the temperature, see clear increasing trend
+ggplot(BR_complete, aes(y = Temperature_C, x = Date)) +
+  geom_line() +
+  geom_smooth(method = lm)
 
 ```
 
@@ -100,8 +105,18 @@ BR_complete <- inner_join(Rainfall_BR_processed,Temp_BR_processed)
 
 ```{r}
 #Exercise 7: Create a time series objects for each series using ts(). Make sure you specify the starting point and frequency.
+f_month <- month(first(BR_complete$Date))
+f_year <- year(first(BR_complete$Date))
 
+#rainfall ts
+BR_ts_rainfall <- ts(BR_complete$Rainfall,
+                   start=c(f_year,f_month),
+                   frequency=12)
 
+#temperature ts
+BR_ts_temp <- ts(BR_complete$Temperature_C,
+                   start=c(f_year,f_month),
+                   frequency=12) 
 
 ```
 
@@ -123,25 +138,43 @@ The `stl` function decomposes the time series object into its component parts. W
 # Exercise 8: Use the stl() function to decompose both series. 
 # Visualize the decomposed series using plot(). What components can you identify?
 
+#rainfall decomposed - the bigger the bar, the smaller the contribution to your overall series - trend does not seem to be significant
+BR_rainfall_decomp <- stl(BR_ts_rainfall, s.window = "periodic")
+plot(BR_rainfall_decomp)
 
-
-
+#temperature decomposed - seasonality and trend are playing similar parts - see increasing trend around 1980s (in trend)
+BR_temp_decomp <- stl(BR_ts_temp, s.window = "periodic")
+plot(BR_temp_decomp)
 
 
 # Exercise 9: Use the times series object generated with the stl() to extract the 
 # components of each series and turn them into data frames.
 
+BR_rainfall_df <- as.data.frame(BR_rainfall_decomp$time.series[,1:3])
+BR_temp_df <- as.data.frame(BR_temp_decomp$time.series[,1:3])
 
+BR_rainfall_df <- mutate(BR_rainfall_df,
+        Observed = BR_complete$Rainfall,     
+        Date = BR_complete$Date)
 
-
+BR_temp_df <- mutate(BR_temp_df,
+        Observed = BR_complete$Temperature_C,     
+        Date = BR_complete$Date)
 
 
 # Exercise 10: Visualize how the trend maps onto the data for both series
 
+#rainfall
+ggplot(BR_rainfall_df, aes(x=Date)) +
+  geom_line(aes(y = Observed), col = "black") +
+  geom_line(aes(y = trend), col = "red") +
+  ylab("Rainfall")
 
-
-
-
+#temperature
+ggplot(BR_temp_df, aes(x=Date)) +
+  geom_line(aes(y = Observed), col = "black") +
+  geom_line(aes(y = trend), col = "red") +
+  ylab("Temperature")
 
 ```
 
@@ -160,17 +193,18 @@ Monotonic trends are a gradual shift over time that is consistent in direction. 
 
 # Exercise 11: Apply one of the trend detection test to the original data set. Remember that the data has seasonal component, which test can be applied in this case?
 
+#rainfall - no trend
+rain_trend <- trend::smk.test(BR_ts_rainfall)
+summary(rain_trend)
 
-
-
-
-
-
+#temperature - 
+temp_trend <- trend::smk.test(BR_ts_temp)
+summary(temp_trend)
 
 
 # Exercise 12: Now remove the seasonality and apply another test. Compare the results with what you obtained on Exercise 9.
 
-
+#take observed, subtract seasonal, provide that series to original mann-kendall
 
 
 

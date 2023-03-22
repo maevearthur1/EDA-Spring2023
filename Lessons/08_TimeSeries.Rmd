@@ -29,6 +29,7 @@ library(zoo)
 library(Kendall)
 #install.packages("tseries")
 library(tseries)
+library(ggplot2)
 
 # Set theme
 mytheme <- theme_classic(base_size = 14) +
@@ -115,6 +116,7 @@ We first need to turn the discharge data into a time series object in R. This is
 Note: time series objects must be equispaced. In our case, we have daily data with no NAs in the data frame, so we don't need to worry about this. We will cover how to address data that are not equispaced later in the lesson.
 
 ```{r}
+#defining time series object
 EnoDischarge.late_ts <- ts(EnoDischarge.late$discharge.mean, start = c(1985,1), frequency = 365)
 ```
 
